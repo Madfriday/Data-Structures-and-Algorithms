@@ -2,28 +2,28 @@
 
 * Java为数据结构中的映射定义了一个接口java.util.Map，它有四个实现类，分别是HashMap、HashTable、LinkedHashMap和TreeMap。  
 关键技术剖析：  
-```
-Map用于存储键值对，根据键得到值，因此不允许键重复，值可以重复。
+
+Map用于存储键值对，根据键得到值，因此不允许键重复，值可以重复:   
 （1）HashMap是一个最常用的Map，它根据键的hashCode值存储数据，根据键可以直接获取它的值，具有很快的访问速度。HashMap最多只允许一条记录的键为null，不允许多条记录的值为null。HashMap不支持线程的同步，即任一时刻可以有多个线程同时写HashMap，可能会导致数据的不一致。如果需要同步，可以用Collections.synchronizedMap(HashMap map)方法使HashMap具有同步的能力。  
 （2）Hashtable与HashMap类似，不同的是：它不允许记录的键或者值为空；它支持线程的同步，即任一时刻只有一个线程能写Hashtable，然而，这也导致了Hashtable在写入时会比较慢。  
 （3）LinkedHashMap保存了记录的插入顺序，在用Iteraor遍历LinkedHashMap时，先得到的记录肯定是先插入的。在遍历的时候会比HashMap慢。有HashMap的全部特性。  
 （4）TreeMap能够把它保存的记录根据键排序，默认是按升序排序，也可以指定排序的比较器。当用Iteraor遍历TreeMap时，得到的记录是排过序的。TreeMap的键和值都不能为空。
+
+
+
+
 ```
+1.HashMap允许有一个NULL(key) , 多个NULL(value);HashTable 不允许键值为空
 
+2.HashMap提供containskey()和contiansvalue()方法来判断是否包含,HashTable提供了contains()来判断是否含有key=containskey();
 
+3.由于hashmap允许为空，所以不能用get来判端是否含有某个key,只能用containskey来判断
 
-```
-1.   HashMap允许有一个NULL(key) , 多个NULL(value);        HashTable 不允许键值为空
+4. HashMap 使用的是迭代  而 HashTable使用的是枚举，其中只有是否有下一个值和获取下一个值两个方法，不包括remove();
 
-2.  HashMap提供containskey()和contiansvalue()方法来判断是否包含,HashTable提供了contains()来判断是否含有key=containskey();
+5.扩容机制 HashMap 默认数组16  扩容为2的指数，   HashTable 默认数组为11,扩容为2*11+1；
 
-         注： 由于hashmap允许为空，所以不能用get来判端是否含有某个key,只能用containskey来判断
-
-3 .  HashMap 使用的是迭代  而 HashTable使用的是枚举，其中只有是否有下一个值和获取下一个值两个方法，不包括remove();
-
-4.  扩容机制 HashMap 默认数组16  扩容为2的指数，   HashTable 默认数组为11,扩容为2*11+1；
-
-5.  HashTable直接使用值的hashcode()值，HashMap需要对hashCode()进行抖动算法
+6.HashTable直接使用值的hashcode()值，HashMap需要对hashCode()进行抖动算法
 
 HashMap和treeMap区别
 Hashmap,hashtable用数组实现
@@ -80,15 +80,29 @@ HashMap基于哈希思想:
 
 ```
 采用了(数组 + 链表 )的实现结构,HashTable并没有去继承AbstractMap，而是选择继承了Dictionary类，Dictionary是个被废弃的抽象类。
+
 实现原理： 
-成员变量跟HashMap基本类似，但是HashMap更加规范，HashMap内部还定义了一些常量，比如默认的负载因子，默认的容量，最大容量等。  
-——HashTable的默认容量为11，默认负载因子为0.75。（HashMap默认容量是16，默认负载因子也是0.75）    
+
+成员变量跟HashMap基本类似，但是HashMap更加规范，HashMap内部还定义了一些常量，比如默认的负载因子，默认的容量，最大容量等。
+  
+——HashTable的默认容量为11，默认负载因子为0.75。（HashMap默认容量是16，默认负载因子也是0.75）  
+  
 ——HashTable的容量可以为任意整数，最小值为1，而HashMap的容量始终为2的n次方。    
-——为避免扩容带来的性能问题，建议指定合理容量。跟HashMap一样，HashTable内部也有一个静态类叫Entry，其实是个键值对，保存了键和值的引用。也可以理解为一个单链表的节点，因为其持有下一个Entry对象的引用.  
+
+——为避免扩容带来的性能问题，建议指定合理容量。跟HashMap一样，HashTable内部也有一个静态类叫Entry，其实是个键值对，保存了键和值的引用。也可以理解为一个单链表的节点，因为其持有下一个Entry对象的引用. 
+ 
 ——HashTable并不允许值和键为空，若为空，则抛出空指针异常。  
+
 ——HashMap计算索引的方式是h&(length-1)，而HashTable用的是模运算，效率上是低于HashMap的。  
+
 ——HashTable计算索引时将hash值先与上0x7fffffff，这是为了保证hash值始终为整数。  
+
 ——HashTable中若干方法都添加了synchronized关键字，也就意味着这个HashTable是个线程安全的类，这是它与HashMap最大的不同点。  
-——HashTable每次扩容都是旧容量的2倍加2，而HashMap为旧容量的2倍。  
-——Hashtable与HashMap另一个区别是HashMap的迭代器（Iterator）是fail-fast迭代器，而Hashtable的enumerator迭代器不是fail-fast的。所以当有其它线程改变了HashMap的结构（增加或者移除元素），将会抛出ConcurrentModificationException，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常
+
+——HashTable每次扩容都是旧容量的2倍加2，而HashMap为旧容量的2倍。
+  
+——Hashtable与HashMap另一个区别是HashMap的迭代器（Iterator）是fail-fast迭代器.
+
+——Hashtable的enumerator迭代器不是fail-fast的。所以当有其它线程改变了HashMap的结构（增加或者移除元素），将会抛出ConcurrentModificationException，
+但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常
 ```
