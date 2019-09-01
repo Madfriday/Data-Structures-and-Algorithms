@@ -1,4 +1,4 @@
-###differ Hash
+### differ Hash
 
 * Java为数据结构中的映射定义了一个接口java.util.Map，它有四个实现类，分别是HashMap、HashTable、LinkedHashMap和TreeMap。  
 关键技术剖析：  
